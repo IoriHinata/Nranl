@@ -1,0 +1,27 @@
+name: Build Word documents, presentation and trackers
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "book-project/*.md"
+      - "book-project/*.csv"
+      - "scripts/build_book_project.py"
+      - ".github/workflows/build-book-project.yml"
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install python-docx python-pptx openpyxl
+      - run: python scripts/build_book_project.py
+      - name: Commit generated files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add book-project/output
+          if git diff --cached --quiet; then echo "No generated changes"; else git commit -m "Build Word documents, presentation and trackers"; git push; fi
