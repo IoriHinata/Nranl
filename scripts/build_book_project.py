@@ -97,6 +97,28 @@ for sh in wb.worksheets:
         cell.font=Font(bold=True,color="FFFFFF"); cell.fill=PatternFill("solid",fgColor="243B53"); cell.alignment=Alignment(wrap_text=True)
     for col in range(1,sh.max_column+1): sh.column_dimensions[get_column_letter(col)].width=20
 wb.save(out/"PROJECT_TRACKERS.xlsx")
+
+# Word version of the competitor research CSV template
+template_doc=Document()
+p=template_doc.add_paragraph(style="Title"); p.alignment=WD_ALIGN_PARAGRAPH.CENTER; p.add_run("Шаблон анализа конкурентов")
+template_doc.add_paragraph("Используйте эту форму для 15–25 сопоставимых книг. Заполняйте только проверяемые сведения, фиксируйте дату и источник; неизвестные продажи не угадывайте.")
+fields=[
+("Библиографические данные","Название, автор, год публикации, язык и целевой рынок."),
+("Жанр и обещание","Жанр, логлайн/центральная идея, обещание обложки и аннотации."),
+("Начало книги","Как устроена первая зацепка; в какой момент появляется центральный вопрос."),
+("Реакция читателей","Повторяющиеся похвалы и жалобы из доступных отзывов. Не считайте отдельный отзыв репрезентативным."),
+("Публичные показатели","Только опубликованные данные продаж, рейтинги с датой, награды и доступные сведения о тиражах."),
+("Обнаружение книги","Где читатели могли узнать о книге: рекомендации, видео, блог, магазин, библиотека или другое."),
+("Отличие и урок","Что делает книгу узнаваемой; что можно изучить, не копируя чужой текст или оформление."),
+("Источники","URL, дата проверки, оговорки и уровень уверенности.")
+]
+for title,desc in fields:
+    template_doc.add_heading(title,level=2); template_doc.add_paragraph(desc)
+template_doc.add_heading("Карточка одной книги",level=1)
+for label in ["Название и автор","Год / язык / рынок","Жанр","Логлайн","Обложка и аннотация","Зацепка первых страниц","Похвалы читателей","Жалобы читателей","Публичные данные и дата","Канал обнаружения","Отличие","Урок для собственного проекта","Источник URL и дата проверки"]:
+    p=template_doc.add_paragraph(); r=p.add_run(label+": "); r.bold=True; p.add_run("____________________________________________________________")
+template_doc.save(out/"10_COMPETITOR_RESEARCH_TEMPLATE.docx")
+
 files=sorted(x.name for x in out.iterdir() if x.is_file() and not x.name.startswith("."))
 (out/"README_OUTPUT.md").write_text("# Готовые документы\n\n" + "\n".join("- ["+x+"]("+x+")" for x in files)+"\n",encoding="utf-8")
 print("Generated",len(files),"files")
